@@ -7,7 +7,7 @@
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 1s ease;
+  transition: all 0.7s ease;
   rotate: y 0deg;
 }
 

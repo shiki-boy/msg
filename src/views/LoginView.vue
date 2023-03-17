@@ -1,31 +1,22 @@
 <script setup>
-import { useRouter } from 'vue-router';
 import TextInput from '@/components/Forms/TextInput.vue';
-import AppButton from '../components/AppButton.vue';
+import AppButton from '@/components/AppButton.vue';
+
+import { useRouter } from 'vue-router';
 
 const router = useRouter()
 
-const foo = () =>  router.push('/signup') 
+const foo = () => router.push('/signup')
 </script>
 
 <template>
-    <div class="card" @click="foo">
-        <h1>Login</h1>
+    <div class="card">
+        <h1 @click="foo">Login</h1>
 
         <TextInput name="email" label="Email" />
 
-        <AppButton label="Login" />
+        <AppButton label="Log in" />
     </div>
 </template>
 
-<style scoped>
-.card {
-    max-width: 50vw;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    translate: -50% -50% 0px;
-    padding: 40px;
-    border: 1px solid;
-}
-</style>
+<style scoped></style>
