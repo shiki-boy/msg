@@ -1,6 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import TextInput from '@/components/Forms/TextInput.vue';
+import AppButton from '../components/AppButton.vue';
 
 const router = useRouter()
 
@@ -12,6 +13,8 @@ const foo = () =>  router.push('/signup')
         <h1>Login</h1>
 
         <TextInput name="email" label="Email" />
+
+        <AppButton label="Login" />
     </div>
 </template>
 

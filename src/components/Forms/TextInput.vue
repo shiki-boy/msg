@@ -23,7 +23,7 @@ defineProps({
 .input-field{
     position: relative;
     padding: 20px 0 0;
-    margin-top: 10px;
+    margin: 10px 0 20px;
     width: 100%;
     max-width: 180px;
 }
