@@ -1,0 +1,22 @@
+@import './base.css';
+@import './typography.css';
+
+#app {
+    min-height: 100vh;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 1s ease;
+  rotate: y 0deg;
+}
+
+.fade-enter-from {
+  rotate: y -90deg;
+  opacity: 0;
+}
+
+.fade-leave-to {
+  rotate: y 90deg;
+  opacity: 0;
+}

@@ -64,6 +64,7 @@ body {
   color: var(--color-text);
   background: var(--color-background);
   line-height: 1.6;
+  font-family: 'Poppins';
   font-size: 16px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
