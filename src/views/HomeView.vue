@@ -2,7 +2,5 @@
 </script>
 
 <template>
-  <main>
-    <h1>Hello</h1>
-  </main>
+  <h1>Hello</h1>
 </template>

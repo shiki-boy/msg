@@ -8,15 +8,28 @@
 .fade-enter-active,
 .fade-leave-active {
   transition: all 0.7s ease;
-  rotate: y 0deg;
 }
 
 .fade-enter-from {
-  rotate: y -90deg;
   opacity: 0;
 }
 
 .fade-leave-to {
+  opacity: 1;
+}
+
+.rotate-enter-active,
+.rotate-leave-active {
+  transition: all 0.7s ease;
+  rotate: y 0deg;
+}
+
+.rotate-enter-from {
+  rotate: y -90deg;
+  opacity: 0;
+}
+
+.rotate-leave-to {
   rotate: y 90deg;
   opacity: 0;
 }
