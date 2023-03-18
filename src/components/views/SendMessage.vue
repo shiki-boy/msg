@@ -8,10 +8,11 @@
 <style scoped>
 .send-message {
     position: sticky;
-    bottom: 10px;
+    bottom: 20px;
     display: flex;
     align-items: center;
     margin-top: 10px;
+    z-index: 10;
 }
 
 
@@ -23,7 +24,7 @@
     font-size: 15px;
     border: 1px solid #5e4dcd;
     border-radius: 6px 0 0 6px;
-    background-color: transparent;
+    background-color: var(--color-background);
 }
 
 .send-btn {

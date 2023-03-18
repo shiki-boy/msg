@@ -5,28 +5,29 @@ import ChatBubble from '../components/views/ChatBubble.vue';
 
 <template>
   <div class="chat">
-    <ChatBubble text="Hello world" />
-    <ChatBubble text="Yo" :is-mine="true" />
+    <header>
+      <h4>John Doe</h4>
+    </header>
+
+    <div class="chat-messages">
+      <ChatBubble text="Hello world" />
+      <ChatBubble text="Yo" :is-mine="true" />
+    </div>
   </div>
 </template>
 
 <style scoped>
-.chat {
-  display: flex;
-  flex-direction: column-reverse;
-  flex: 1;
-  height: 100vh;
-}
-.bubble{
-  width: max-content;
-  background-color: #364151;
-  padding: 8px 15px;
-  margin: 10px 0;
-  border-radius: 15px 15px 0 15px;
+header {
+  position: sticky;
+  top: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.5);
 }
 
-.bubble.mine {
-  align-self: flex-end;
-  background-color: #125e59;
+.chat-messages {
+  display: flex;
+  flex-direction: column-reverse;
+  height: calc(100vh - 145px);
+  overflow-y: auto;
 }
 </style>
