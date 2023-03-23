@@ -1,0 +1,42 @@
+version: '3.6'
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - ./db-data:/data/db
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DBNAME}
+    env_file:
+      - .env
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: development-build
+    restart: on-failure
+    depends_on:
+      - mongo
+    volumes:
+      - ./:/app:cached # when the host performs changes, the container is in read only mode.
+      - node_modules:/app/node_modules:delegated # docker container performs changes, host is in read only mode.
+      - npm_cache:/root/.npm:delegated
+    ports:
+      - ${PORT}:${PORT}
+    env_file:
+      - .env
+
+volumes:
+  npm_cache:
+  node_modules:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./node_modules

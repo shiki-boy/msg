@@ -35,6 +35,7 @@ defineProps({
 
 .bubble.mine {
     align-self: flex-end;
-    background-color: #125e59;
+    background-color: #5e4dcd;
+    color: white;
 }
 </style>
