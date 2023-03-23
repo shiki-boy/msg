@@ -4,10 +4,13 @@ import helmet from "@fastify/helmet";
 
 import validateEnv from "./validateEnv";
 import loggingOptions from "./loggingOptions";
+import connectToDatabase from "./db";
 
 validateEnv();
 
 buildServer();
+
+connectToDatabase();
 
 async function buildServer() {
   const server = Fastify({
