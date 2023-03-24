@@ -41,9 +41,17 @@ const loginSchema = z.object({
 
 const loginResponseSchema = z.object({
   accessToken: z.string(),
+  user: z.object({ ...userCore, _id: z.string() }),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;
+
+// ---
+
+const userInfoResponseSchema = z.object({
+  ...userCore,
+  _id: z.string()
+})
 
 // ---
 
@@ -53,4 +61,6 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 
   loginSchema,
   loginResponseSchema,
+
+  userInfoResponseSchema,
 });

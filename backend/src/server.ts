@@ -1,12 +1,22 @@
 import Fastify, { FastifyRequest, FastifyReply } from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
+import fjwt, { JWT } from "@fastify/jwt";
 
 import validateEnv from "./validateEnv";
 import loggingOptions from "./loggingOptions";
 import connectToDatabase from "./db";
 import { userSchemas } from "./modules/user.schema";
 import userRoutes from "./modules/user.route";
+
+declare module "fastify" {
+  interface FastifyRequest {
+    jwt: JWT;
+  }
+  export interface FastifyInstance {
+    authenticate: () => void;
+  }
+}
 
 validateEnv();
 
@@ -27,6 +37,28 @@ async function buildServer() {
   await server.register(import("@fastify/compress"));
 
   server.register(helmet);
+
+  // JWT
+  server.register(fjwt, {
+    secret: process.env.SECRET_KEY,
+  });
+
+  server.decorate(
+    "authenticate",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        await request.jwtVerify();
+      } catch (e) {
+        return reply.send(e);
+      }
+    }
+  );
+
+  server.addHook("preHandler", (req, reply, next) => {
+    req.jwt = server.jwt;
+    return next();
+  });
+
 
   server.get("/healthcheck", async function () {
     return { status: "OK" };

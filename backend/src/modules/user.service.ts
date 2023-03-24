@@ -1,12 +1,13 @@
-import { hash } from "bcrypt";
+import { compare, hash } from "bcrypt";
 
 import { HttpException } from "@/utils/exceptions";
 
 import userModel from "./user.model";
-import { CreateUserInput } from "./user.schema";
+import { CreateUserInput, LoginInput } from "./user.schema";
+import { IUser } from "./types";
 
 export async function createUser(input: CreateUserInput) {
-  const { password, ...rest } = input;
+  const { password } = input;
 
   const user = await userModel.findOne({ email: input.email }).exec();
   if (user) {
@@ -20,4 +21,32 @@ export async function createUser(input: CreateUserInput) {
   });
 
   return newUser;
+}
+
+export async function loginUser(
+  input: LoginInput
+): Promise<{ user: IUser; accessToken: string }> {
+  const user = await userModel
+    .findOne({ email: input.email })
+    .select("+password")
+    .exec();
+  if (!user) {
+    throw new HttpException(401, "This user does not exist");
+  }
+
+  const isPasswordCorrect = await compare(input.password, user.password);
+  if (!isPasswordCorrect) {
+    throw new HttpException(401, "Invalid credentials provided");
+  }
+
+  const accessToken = user.generateAuthToken();
+
+  return {
+    user,
+    accessToken,
+  };
+}
+
+export async function findUser(id: string) {
+  return userModel.findById(id);
 }
