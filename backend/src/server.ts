@@ -1,18 +1,22 @@
 import Fastify, { FastifyRequest, FastifyReply } from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
-import fjwt, { JWT } from "@fastify/jwt";
 
 import validateEnv from "./validateEnv";
 import loggingOptions from "./loggingOptions";
 import connectToDatabase from "./db";
-import { userSchemas } from "./modules/user.schema";
-import userRoutes from "./modules/user.route";
+import { userSchemas } from "./modules/user/schema";
+import userRoutes from "./modules/user/routes";
+import blacklistTokenModel from "./modules/user/blacklistToken.model";
+import userModel from "./modules/user/user.model";
+import { User } from "./modules/user/types";
 
 declare module "fastify" {
-  interface FastifyRequest {
-    jwt: JWT;
+  export interface FastifyRequest {
+    user: User;
+    token: string;
   }
+
   export interface FastifyInstance {
     authenticate: () => void;
   }
@@ -38,27 +42,37 @@ async function buildServer() {
 
   server.register(helmet);
 
-  // JWT
-  server.register(fjwt, {
-    secret: process.env.SECRET_KEY,
-  });
-
   server.decorate(
     "authenticate",
     async (request: FastifyRequest, reply: FastifyReply) => {
+      const token = request.headers["authorization"]
+        ?.split("Bearer")
+        .pop()
+        .trim();
+
+      // check if token is blacklisted or not
+      blacklistTokenModel.exists({ token }).then((result) => {
+        if (result) {
+          reply.code(401).send({ message: "Your session has expired" });
+        }
+      });
+
       try {
-        await request.jwtVerify();
-      } catch (e) {
-        return reply.send(e);
+        const user = await userModel.findByToken(token);
+
+        if (!user) {
+          return Promise.reject();
+        } else {
+          request.user = user;
+          request.token = token;
+        }
+      } catch (error) {
+        reply
+          .code(401)
+          .send({ message: "Invalid authentication credentials" });
       }
     }
   );
-
-  server.addHook("preHandler", (req, reply, next) => {
-    req.jwt = server.jwt;
-    return next();
-  });
-
 
   server.get("/healthcheck", async function () {
     return { status: "OK" };
@@ -68,7 +82,7 @@ async function buildServer() {
     server.addSchema(schema);
   }
 
-  server.register(userRoutes, { prefix: "api/users" });
+  server.register(userRoutes, { prefix: "api/auth" });
 
   // start server
   const port = process.env.PORT as unknown as number;

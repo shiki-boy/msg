@@ -3,13 +3,14 @@ import { FastifyInstance } from "fastify";
 import {
   getUserHandler,
   loginHandler,
+  logoutUserHandler,
   registerUserHandler,
-} from "./user.controller";
-import { $ref } from "./user.schema";
+} from "./controller";
+import { $ref } from "./schema";
 
 async function userRoutes(server: FastifyInstance) {
   server.post(
-    "/",
+    "/register",
     {
       schema: {
         body: $ref("createUserSchema"),
@@ -45,6 +46,14 @@ async function userRoutes(server: FastifyInstance) {
       }
     },
     getUserHandler
+  );
+
+  server.post(
+    "/logout",
+    {
+      onRequest: [server.authenticate],
+    },
+    logoutUserHandler
   );
 }
 

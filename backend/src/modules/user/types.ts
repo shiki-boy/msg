@@ -4,6 +4,7 @@ import { Model } from "mongoose";
 import { BaseFields } from "@/utils/types";
 
 export interface IUser extends BaseFields {
+  _id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -21,4 +22,8 @@ export interface User extends Model<IUser, object, IUserMethods> {
 
 export interface CustomTokenPayload extends JwtPayload {
   _id: string;
+}
+
+export interface BlacklistToken extends BaseFields {
+  token: string;
 }

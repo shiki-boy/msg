@@ -3,7 +3,7 @@ import { compare, hash } from "bcrypt";
 import { HttpException } from "@/utils/exceptions";
 
 import userModel from "./user.model";
-import { CreateUserInput, LoginInput } from "./user.schema";
+import { CreateUserInput, LoginInput } from "./schema";
 import { IUser } from "./types";
 
 export async function createUser(input: CreateUserInput) {
@@ -50,3 +50,4 @@ export async function loginUser(
 export async function findUser(id: string) {
   return userModel.findById(id);
 }
+

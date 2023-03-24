@@ -57,7 +57,7 @@ userSchema.statics.findByToken = function (token: string): Promise<User> {
   const verifyOptions: jwt.VerifyOptions = {
     algorithms: ["HS256"],
   };
-
+  console.log('----->', {token})
   try {
     const decoded = jwt.verify(
       token,
