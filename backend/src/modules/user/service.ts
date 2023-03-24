@@ -4,7 +4,8 @@ import { HttpException } from "@/utils/exceptions";
 
 import userModel from "./user.model";
 import { CreateUserInput, LoginInput } from "./schema";
-import { IUser } from "./types";
+import { BlacklistToken, IUser } from "./types";
+import blacklistTokenModel from "./blacklistToken.model";
 
 export async function createUser(input: CreateUserInput) {
   const { password } = input;
@@ -25,7 +26,7 @@ export async function createUser(input: CreateUserInput) {
 
 export async function loginUser(
   input: LoginInput
-): Promise<{ user: IUser; accessToken: string }> {
+): Promise<{ user: IUser; accessToken: string; refreshToken: string }> {
   const user = await userModel
     .findOne({ email: input.email })
     .select("+password")
@@ -39,11 +40,12 @@ export async function loginUser(
     throw new HttpException(401, "Invalid credentials provided");
   }
 
-  const accessToken = user.generateAuthToken();
+  const { accessToken, refreshToken } = user.generateAuthToken();
 
   return {
     user,
     accessToken,
+    refreshToken,
   };
 }
 
@@ -51,3 +53,16 @@ export async function findUser(id: string) {
   return userModel.findById(id);
 }
 
+export async function blacklistToken(
+  token: string
+){
+  const isTokenBlacklisted = await blacklistTokenModel.exists({
+    token,
+  });
+
+  if (isTokenBlacklisted) {
+    return;
+  }
+
+  return blacklistTokenModel.create({ token });
+}

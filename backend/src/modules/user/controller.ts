@@ -1,8 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import blacklistTokenModel from "./blacklistToken.model";
 
-import { CreateUserInput, LoginInput } from "./schema";
-import { createUser, loginUser } from "./service";
+import { CreateUserInput, LoginInput, RefreshTokenInput } from "./schema";
+import { blacklistToken, createUser, loginUser } from "./service";
 
 export async function registerUserHandler(
   request: FastifyRequest<{
@@ -37,17 +36,7 @@ export async function logoutUserHandler(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const token = request.token;
-
-  const isTokenBlacklisted = await blacklistTokenModel.exists({
-    token,
-  });
-
-  if (isTokenBlacklisted) {
-    return;
-  }
-
-  await blacklistTokenModel.create({ token });
+  await blacklistToken(request.token);
 
   reply.send({ message: "User logged out successfully" });
 }
@@ -59,4 +48,21 @@ export async function getUserHandler(
   const response = request.user;
 
   reply.send(response);
+}
+
+export async function refreshTokenHandler(
+  request: FastifyRequest<{
+    Body: RefreshTokenInput
+  }>,
+  reply: FastifyReply
+) {
+  // blacklisting both access and refresh tokens
+  await blacklistToken(request.body.token)
+
+  await blacklistToken(request.token)
+
+   // @ts-expect-error generateAuthToken is there
+  const tokens = request.user.generateAuthToken()
+
+  reply.send(tokens);
 }

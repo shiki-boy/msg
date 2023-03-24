@@ -4,6 +4,7 @@ import {
   getUserHandler,
   loginHandler,
   logoutUserHandler,
+  refreshTokenHandler,
   registerUserHandler,
 } from "./controller";
 import { $ref } from "./schema";
@@ -54,6 +55,18 @@ async function userRoutes(server: FastifyInstance) {
       onRequest: [server.authenticate],
     },
     logoutUserHandler
+  );
+
+  server.post(
+    "/token/refresh",
+    {
+      onRequest: [server.authenticate],
+      schema: {
+        body: $ref("refreshTokenSchema"),
+        response: { 200 : $ref("refreshTokenResponseSchema") }
+      }
+    },
+    refreshTokenHandler
   );
 }
 

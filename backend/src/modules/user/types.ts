@@ -13,7 +13,7 @@ export interface IUser extends BaseFields {
 }
 
 interface IUserMethods {
-  generateAuthToken: () => string;
+  generateAuthToken: () => {accessToken: string, refreshToken: string};
 }
 
 export interface User extends Model<IUser, object, IUserMethods> {

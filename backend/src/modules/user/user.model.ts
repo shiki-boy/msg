@@ -5,7 +5,7 @@ import { User, CustomTokenPayload, IUser } from "./types";
 
 const ObjectId = (id: string) => new Types.ObjectId(id);
 
-const { SECRET_KEY } = process.env
+const { SECRET_KEY } = process.env;
 
 const userSchema: Schema = new Schema<IUser, User>(
   {
@@ -43,13 +43,20 @@ userSchema.methods.generateAuthToken = function () {
   };
 
   const signOptions: jwt.SignOptions = {
-    expiresIn: "10h",
+    expiresIn: "5m",
     algorithm: "HS256",
   };
 
-  const token = jwt.sign(jwtPayload, SECRET_KEY, signOptions).toString();
+  const accessToken = jwt.sign(jwtPayload, SECRET_KEY, signOptions).toString();
 
-  return token;
+  const refreshToken = jwt
+    .sign(jwtPayload, SECRET_KEY, { ...signOptions, expiresIn: "1d" })
+    .toString();
+
+  return {
+    accessToken,
+    refreshToken,
+  };
 };
 
 userSchema.statics.findByToken = function (token: string): Promise<User> {
@@ -57,7 +64,6 @@ userSchema.statics.findByToken = function (token: string): Promise<User> {
   const verifyOptions: jwt.VerifyOptions = {
     algorithms: ["HS256"],
   };
-  console.log('----->', {token})
   try {
     const decoded = jwt.verify(
       token,
