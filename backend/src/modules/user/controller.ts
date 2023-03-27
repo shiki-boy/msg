@@ -58,7 +58,7 @@ export async function getUserHandler(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const response = request.user;
+  const response = request.userObj;
 
   reply.send(response);
 }
@@ -99,6 +99,6 @@ export async function listChannelsHandler(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const channels = await listChannels(request.user)
+  const channels = await listChannels(request.user);
   reply.send({ channels });
 }

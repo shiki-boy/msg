@@ -1,9 +1,34 @@
+<script setup>
+import { onMounted } from "vue";
+import httpClient from "../../httpClient";
+import { useAuthStore } from "../../stores/auth";
+import { useChatStore } from "../../stores/chat";
+
+const chatStore = useChatStore();
+const authStore = useAuthStore();
+
+onMounted(async () => {
+    const { data } = await httpClient.get("/api/auth/channels");
+
+    chatStore.addChannels(data.channels);
+});
+
+const formatChannelTitle = (title) => {
+    return title
+        .split("_")
+        .filter((name) => name !== authStore.user.fullName)[0]
+        .split(" ")
+        .map((name) => name[0])
+        .join(" ");
+};
+</script>
+
 <template>
     <aside class="sidebar">
         <nav>
-            <div class="channel">JD</div>
-            <div class="channel">MK</div>
-            <div class="channel">AK</div>
+            <div v-for="channel in chatStore.channels" :key="channel._id" class="channel">
+                {{ formatChannelTitle(channel.title) }}
+            </div>
         </nav>
     </aside>
 </template>
@@ -34,6 +59,7 @@ nav {
     place-items: center;
     cursor: pointer;
     transition: all 0.5s ease;
+    text-transform: uppercase;
 }
 
 .channel:hover {

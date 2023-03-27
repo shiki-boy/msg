@@ -94,9 +94,7 @@ userSchema.statics.findByToken = function (
       verifyOptions
     ) as CustomTokenPayload;
 
-    return user.findOne({
-      _id: ObjectId(decoded._id),
-    });
+    return user.findById(decoded._id);
   } catch (error) {
     return Promise.reject();
   }

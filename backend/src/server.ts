@@ -10,11 +10,12 @@ import { userSchemas } from "./modules/user/schema";
 import userRoutes from "./modules/user/routes";
 import blacklistTokenModel from "./modules/user/blacklistToken.model";
 import userModel from "./modules/user/user.model";
-import { UserResultDoc } from "./modules/user/types";
+import { IUser, UserResultDoc } from "./modules/user/types";
 
 declare module "fastify" {
   export interface FastifyRequest {
-    user: UserResultDoc;
+    user: UserResultDoc; // this is a mongoose document
+    userObj: IUser; // this is with virtuals
     token: string;
   }
 
@@ -65,12 +66,11 @@ async function buildServer() {
           return Promise.reject();
         } else {
           request.user = user;
+          request.userObj = user.toObject({ virtuals: true });
           request.token = token;
         }
       } catch (error) {
-        reply
-          .code(401)
-          .send({ message: "Invalid authentication credentials" });
+        reply.code(401).send({ message: "Invalid authentication credentials" });
       }
     }
   );
@@ -78,8 +78,8 @@ async function buildServer() {
   // websockets
   server.register(fastifyIO, {
     cors: {
-      origin: process.env.ORIGIN
-    }
+      origin: process.env.ORIGIN,
+    },
   });
 
   server.get("/healthcheck", async function () {
@@ -92,17 +92,20 @@ async function buildServer() {
 
   server.register(userRoutes, { prefix: "api/auth" });
 
-  await server.ready()
-  
+  await server.ready();
+
   // start server
   const port = process.env.PORT as unknown as number;
 
   await server.listen({ port, host: "0.0.0.0" });
 
-  server.io.on('connection', (socket) => {
-    console.log('new ws connection')
-    socket.on('send-message', (data) => {
-      socket.broadcast.emit('new-message', {text: data.message, isMine: false})
-    })
-  })
+  server.io.on("connection", (socket) => {
+    console.log("new ws connection");
+    socket.on("send-message", (data) => {
+      socket.broadcast.emit("new-message", {
+        text: data.message,
+        isMine: false,
+      });
+    });
+  });
 }

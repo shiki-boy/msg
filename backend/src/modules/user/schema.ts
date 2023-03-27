@@ -52,6 +52,7 @@ export type LoginInput = z.infer<typeof loginSchema>;
 const userInfoResponseSchema = z.object({
   ...userCore,
   _id: z.string(),
+  fullName: z.string(),
 });
 
 // ---
