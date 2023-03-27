@@ -1,7 +1,11 @@
 import { defineStore } from "pinia";
 
 export const useChatStore = defineStore("chat", {
-  state: () => ({ messages: [{ text: "Hello", isMine: true }], channels: [] }),
+  state: () => ({
+    messages: [{ text: "Hello", isMine: true }],
+    channels: [],
+    selectedChannel: null,
+  }),
 
   actions: {
     addNewMessage(msg) {
@@ -10,6 +14,10 @@ export const useChatStore = defineStore("chat", {
 
     addChannels(channels = []) {
       this.channels = [...this.channels, ...channels];
+    },
+
+    selectChannel(channel) {
+      this.selectedChannel = channel;
     },
   },
 });
