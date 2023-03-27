@@ -3,6 +3,7 @@ import { FastifyInstance } from "fastify";
 import {
   addFriendHandler,
   getUserHandler,
+  listChannelsHandler,
   loginHandler,
   logoutUserHandler,
   refreshTokenHandler,
@@ -43,9 +44,9 @@ async function userRoutes(server: FastifyInstance) {
       preHandler: [server.authenticate],
       schema: {
         response: {
-          200: $ref("userInfoResponseSchema")
-        }
-      }
+          200: $ref("userInfoResponseSchema"),
+        },
+      },
     },
     getUserHandler
   );
@@ -63,21 +64,34 @@ async function userRoutes(server: FastifyInstance) {
     {
       schema: {
         body: $ref("refreshTokenSchema"),
-        response: { 200 : $ref("refreshTokenResponseSchema") }
-      }
+        response: { 200: $ref("refreshTokenResponseSchema") },
+      },
     },
     refreshTokenHandler
   );
 
-  server.post("/friends/add", 
-  {
-    onRequest: [server.authenticate],
-    schema: {
-      body: $ref("addFriendSchema"),
-      // response: { 200 : $ref("") }
-    }
-  },
-  addFriendHandler)
+  server.post(
+    "/friends/add",
+    {
+      onRequest: [server.authenticate],
+      schema: {
+        body: $ref("addFriendSchema"),
+        // response: { 200 : $ref("") }
+      },
+    },
+    addFriendHandler
+  );
+
+  server.get(
+    "/channels",
+    {
+      onRequest: [server.authenticate],
+      schema: {
+        response: { 200 : $ref("listChannelsSchema") }
+      },
+    },
+    listChannelsHandler
+  );
 }
 
 export default userRoutes;

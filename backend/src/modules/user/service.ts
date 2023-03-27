@@ -134,3 +134,9 @@ export async function createChannel({
     })
   );
 }
+
+export async function listChannels(user: UserResultDoc) {
+  // TODO: aggregate pipeline, for pagination
+  const { channels } = await user.populate("channels");
+  return channels;
+}

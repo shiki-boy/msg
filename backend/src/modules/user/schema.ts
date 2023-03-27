@@ -75,6 +75,16 @@ const addFriendSchema = z.object({
 
 export type AddFriendInput = z.infer<typeof addFriendSchema>
 
+// ---
+
+const listChannelsSchema = z.object({
+  channels: z.array(z.object({
+    _id: z.string(),
+    title: z.string(),
+    isDirect: z.boolean(),
+  }))
+})
+
 export const { schemas: userSchemas, $ref } = buildJsonSchemas({
   createUserSchema,
   createUserResponseSchema,
@@ -88,4 +98,6 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
   refreshTokenResponseSchema,
 
   addFriendSchema,
+
+  listChannelsSchema,
 });

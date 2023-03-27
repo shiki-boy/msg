@@ -11,6 +11,7 @@ import {
   blacklistToken,
   createChannel,
   createUser,
+  listChannels,
   loginUser,
 } from "./service";
 import userModel from "./user.model";
@@ -92,4 +93,12 @@ export async function addFriendHandler(
   await createChannel({ isDirect: true, members: [request.user, friend] });
 
   reply.send({ message: "Friend added successfully" });
+}
+
+export async function listChannelsHandler(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const channels = await listChannels(request.user)
+  reply.send({ channels });
 }
