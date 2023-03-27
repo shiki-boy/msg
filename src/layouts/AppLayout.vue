@@ -1,16 +1,30 @@
 <script setup>
-import { provide } from 'vue'
-import { RouterView } from 'vue-router';
+import { onBeforeMount, provide } from 'vue'
+import { RouterView, useRouter } from 'vue-router';
 import { io } from "socket.io-client";
 import SendMessage from '@/components/views/SendMessage.vue';
 import ChannelSidebar from '../components/views/ChannelSidebar.vue';
+import { useAuthStore } from '../stores/auth';
+
+const authStore = useAuthStore()
 
 const socket = io("ws://localhost:8000")
 provide('socket', socket)
+
+const router = useRouter()
+
+onBeforeMount(() => {
+    authStore.getUserInfo().then((isSuccess) => {
+        if (!isSuccess) {
+            router.push('/login')
+        }
+    })
+})
+
 </script>
 
 <template>
-    <div class="app-layout-container">
+    <div class="app-layout-container" v-if="!authStore.isLoading && authStore.isAuthenticated">
         <ChannelSidebar />
 
         <main>
@@ -18,6 +32,9 @@ provide('socket', socket)
 
             <SendMessage />
         </main>
+    </div>
+    <div v-else>
+        Loading...
     </div>
 </template>
 

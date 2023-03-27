@@ -3,12 +3,13 @@ defineProps({
     label: {
         type: String,
         required: true
-    }
+    },
+    type: String
 })
 </script>
 
 <template>
-    <button>
+    <button :type="type">
         <span class="shadow"></span>
         <span class="edge"></span>
         <span class="text">{{ label }}</span>

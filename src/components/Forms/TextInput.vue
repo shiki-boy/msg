@@ -1,26 +1,35 @@
 <script setup>
 defineProps({
-  label: {
-    type: String,
-    required: true
-  },
-  name: {
-    type: String,
-    required: true
-  },
-  required: Boolean
+    label: {
+        type: String,
+        required: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    type: {
+        type: String,
+        required: true
+    },
+    required: Boolean,
+    modelValue: String,
 })
+
+defineEmits(['update:modelValue'])
+
 </script>
 
 <template>
     <div class="input-field">
-        <input :required="required" type="input" :placeholder="label">
+        <input :required="required" :type="type" :value="modelValue"
+            @input="$emit('update:modelValue', $event.target.value)" :placeholder="label">
         <label :for="name">{{ label }}</label>
     </div>
 </template>
 
 <style scoped>
-.input-field{
+.input-field {
     position: relative;
     padding: 20px 0 0;
     margin: 10px 0 20px;
