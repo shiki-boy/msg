@@ -1,7 +1,12 @@
 <script setup>
+import { provide } from 'vue'
 import { RouterView } from 'vue-router';
+import { io } from "socket.io-client";
 import SendMessage from '@/components/views/SendMessage.vue';
 import ChannelSidebar from '../components/views/ChannelSidebar.vue';
+
+const socket = io("ws://localhost:8000")
+provide('socket', socket)
 </script>
 
 <template>

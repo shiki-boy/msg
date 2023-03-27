@@ -1,6 +1,7 @@
 import Fastify, { FastifyRequest, FastifyReply } from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
+import fastifyIO from "fastify-socket.io";
 
 import validateEnv from "./validateEnv";
 import loggingOptions from "./loggingOptions";
@@ -9,11 +10,11 @@ import { userSchemas } from "./modules/user/schema";
 import userRoutes from "./modules/user/routes";
 import blacklistTokenModel from "./modules/user/blacklistToken.model";
 import userModel from "./modules/user/user.model";
-import { User } from "./modules/user/types";
+import { UserResultDoc } from "./modules/user/types";
 
 declare module "fastify" {
   export interface FastifyRequest {
-    user: User;
+    user: UserResultDoc;
     token: string;
   }
 
@@ -74,6 +75,13 @@ async function buildServer() {
     }
   );
 
+  // websockets
+  server.register(fastifyIO, {
+    cors: {
+      origin: process.env.ORIGIN
+    }
+  });
+
   server.get("/healthcheck", async function () {
     return { status: "OK" };
   });
@@ -84,7 +92,17 @@ async function buildServer() {
 
   server.register(userRoutes, { prefix: "api/auth" });
 
+  await server.ready()
+  
   // start server
   const port = process.env.PORT as unknown as number;
+
   await server.listen({ port, host: "0.0.0.0" });
+
+  server.io.on('connection', (socket) => {
+    console.log('new ws connection')
+    socket.on('send-message', (data) => {
+      socket.broadcast.emit('new-message', {text: data.message, isMine: false})
+    })
+  })
 }

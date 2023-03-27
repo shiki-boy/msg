@@ -67,6 +67,14 @@ const refreshTokenResponseSchema = z.object({
   refreshToken: z.string(),
 });
 
+// ---
+
+const addFriendSchema = z.object({
+  email: z.string().email()
+})
+
+export type AddFriendInput = z.infer<typeof addFriendSchema>
+
 export const { schemas: userSchemas, $ref } = buildJsonSchemas({
   createUserSchema,
   createUserResponseSchema,
@@ -78,4 +86,6 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas({
 
   refreshTokenSchema,
   refreshTokenResponseSchema,
+
+  addFriendSchema,
 });

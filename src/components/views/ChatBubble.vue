@@ -16,7 +16,7 @@ defineProps({
     width: max-content;
     background-color: #364151;
     padding: 8px 15px;
-    margin: 10px 0;
+    margin: 20px 0;
     border-radius: 15px 15px 0 15px;
 }
 

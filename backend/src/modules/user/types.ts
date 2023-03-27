@@ -1,7 +1,11 @@
 import { JwtPayload } from "jsonwebtoken";
-import { Model } from "mongoose";
+import { HydratedDocument, Model } from "mongoose";
 
 import { BaseFields } from "@/utils/types";
+import { Channel } from "../chat/types";
+
+type MemberId = string
+type MemberName = string
 
 export interface IUser extends BaseFields {
   _id: string;
@@ -10,6 +14,9 @@ export interface IUser extends BaseFields {
   email: string;
   password: string;
   isActive: boolean;
+  channels: Channel[]
+  friends: Map<MemberId, MemberName>
+  readonly fullName: string
 }
 
 interface IUserMethods {
@@ -17,8 +24,10 @@ interface IUserMethods {
 }
 
 export interface User extends Model<IUser, object, IUserMethods> {
-  findByToken: (token: string) => Promise<User>;
+  findByToken: (token: string) => Promise<UserResultDoc>;
 }
+
+export type UserResultDoc = HydratedDocument<IUser>
 
 export interface CustomTokenPayload extends JwtPayload {
   _id: string;

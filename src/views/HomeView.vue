@@ -1,5 +1,15 @@
 <script setup>
+import { inject } from 'vue';
 import ChatBubble from '../components/views/ChatBubble.vue';
+import { useChatStore } from '../stores/chat';
+
+const chatStore = useChatStore()
+
+const socket = inject('socket')
+
+socket.on('new-message', (data) => {
+  chatStore.addNewMessage(data)
+})
 
 </script>
 
@@ -10,8 +20,9 @@ import ChatBubble from '../components/views/ChatBubble.vue';
     </header>
 
     <div class="chat-messages">
-      <ChatBubble text="Hello world" />
-      <ChatBubble text="Yo" :is-mine="true" />
+      <template v-for="(message, index) in chatStore.messages" :key="index">
+        <ChatBubble :text="message.text" :is-mine="!!message.isMine"  />
+      </template>
     </div>
   </div>
 </template>

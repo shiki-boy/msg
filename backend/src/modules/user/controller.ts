@@ -1,7 +1,19 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
-import { CreateUserInput, LoginInput, RefreshTokenInput } from "./schema";
-import { blacklistToken, createUser, loginUser } from "./service";
+import {
+  AddFriendInput,
+  CreateUserInput,
+  LoginInput,
+  RefreshTokenInput,
+} from "./schema";
+import {
+  addFriend,
+  blacklistToken,
+  createChannel,
+  createUser,
+  loginUser,
+} from "./service";
+import userModel from "./user.model";
 
 export async function registerUserHandler(
   request: FastifyRequest<{
@@ -52,17 +64,32 @@ export async function getUserHandler(
 
 export async function refreshTokenHandler(
   request: FastifyRequest<{
-    Body: RefreshTokenInput
+    Body: RefreshTokenInput;
   }>,
   reply: FastifyReply
 ) {
   // blacklisting both access and refresh tokens
-  await blacklistToken(request.body.token)
+  await blacklistToken(request.body.token);
 
-  await blacklistToken(request.token)
+  await blacklistToken(request.token);
 
-   // @ts-expect-error generateAuthToken is there
-  const tokens = request.user.generateAuthToken()
+  // @ts-expect-error generateAuthToken is there
+  const tokens = request.user.generateAuthToken();
 
   reply.send(tokens);
+}
+
+export async function addFriendHandler(
+  request: FastifyRequest<{
+    Body: AddFriendInput;
+  }>,
+  reply: FastifyReply
+) {
+  const friend = await userModel.findOne({ email: request.body.email });
+
+  await addFriend(request.body.email, request.user, friend);
+
+  await createChannel({ isDirect: true, members: [request.user, friend] });
+
+  reply.send({ message: "Friend added successfully" });
 }

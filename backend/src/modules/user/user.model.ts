@@ -1,7 +1,8 @@
 import { model, Schema, Types } from "mongoose";
 import jwt from "jsonwebtoken";
 
-import { User, CustomTokenPayload, IUser } from "./types";
+import { User, CustomTokenPayload, IUser, UserResultDoc } from "./types";
+import channelModel from "../chat/channel.model";
 
 const ObjectId = (id: string) => new Types.ObjectId(id);
 
@@ -31,8 +32,28 @@ const userSchema: Schema = new Schema<IUser, User>(
       type: Boolean,
       default: true,
     },
+    channels: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: channelModel,
+        default: [],
+      },
+    ],
+    friends: {
+      type: Map,
+      of: String,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    virtuals: {
+      fullName: {
+        get() {
+          return `${this.firstName} ${this.lastName}`;
+        },
+      },
+    },
+  }
 );
 
 userSchema.methods.generateAuthToken = function () {
@@ -59,7 +80,9 @@ userSchema.methods.generateAuthToken = function () {
   };
 };
 
-userSchema.statics.findByToken = function (token: string): Promise<User> {
+userSchema.statics.findByToken = function (
+  token: string
+): Promise<UserResultDoc> {
   const user = this; // eslint-disable-line @typescript-eslint/no-this-alias
   const verifyOptions: jwt.VerifyOptions = {
     algorithms: ["HS256"],

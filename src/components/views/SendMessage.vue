@@ -1,7 +1,30 @@
+<script setup>
+import { inject, ref } from 'vue';
+import { useChatStore } from '../../stores/chat';
+
+const socket = inject('socket')
+
+const chatStore = useChatStore()
+
+const message = ref('')
+
+const sendMessage = () => {
+    if (!message.value) return
+
+    socket.emit('send-message', { message: message.value })
+    chatStore.addNewMessage({
+        text: message.value,
+        isMine: true
+    })
+    message.value = ''
+}
+</script>
+
 <template>
     <div class="send-message">
-        <input type="text" class="input" placeholder="Start typing..." autocomplete="off">
-        <input class="send-btn" value="Send" type="submit">
+        <input type="text" v-model="message" class="input" placeholder="Start typing..." autocomplete="off"
+            @keyup.enter="sendMessage">
+        <input class="send-btn" value="Send" type="submit" @click="sendMessage">
     </div>
 </template>
 

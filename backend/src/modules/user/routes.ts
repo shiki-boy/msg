@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 
 import {
+  addFriendHandler,
   getUserHandler,
   loginHandler,
   logoutUserHandler,
@@ -60,7 +61,6 @@ async function userRoutes(server: FastifyInstance) {
   server.post(
     "/token/refresh",
     {
-      onRequest: [server.authenticate],
       schema: {
         body: $ref("refreshTokenSchema"),
         response: { 200 : $ref("refreshTokenResponseSchema") }
@@ -68,6 +68,16 @@ async function userRoutes(server: FastifyInstance) {
     },
     refreshTokenHandler
   );
+
+  server.post("/friends/add", 
+  {
+    onRequest: [server.authenticate],
+    schema: {
+      body: $ref("addFriendSchema"),
+      // response: { 200 : $ref("") }
+    }
+  },
+  addFriendHandler)
 }
 
 export default userRoutes;
