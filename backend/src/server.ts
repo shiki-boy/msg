@@ -11,6 +11,8 @@ import userRoutes from "./modules/user/routes";
 import blacklistTokenModel from "./modules/user/blacklistToken.model";
 import userModel from "./modules/user/user.model";
 import { IUser, UserResultDoc } from "./modules/user/types";
+import chatRoutes from "./modules/chat/routes";
+import { chatSchemas } from "./modules/chat/schema";
 
 declare module "fastify" {
   export interface FastifyRequest {
@@ -86,11 +88,12 @@ async function buildServer() {
     return { status: "OK" };
   });
 
-  for (const schema of [...userSchemas]) {
+  for (const schema of [...userSchemas, ...chatSchemas]) {
     server.addSchema(schema);
   }
 
   server.register(userRoutes, { prefix: "api/auth" });
+  server.register(chatRoutes, { prefix: "api/chat" });
 
   await server.ready();
 
