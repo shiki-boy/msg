@@ -69,13 +69,13 @@ export async function refreshTokenHandler(
   }>,
   reply: FastifyReply
 ) {
-  // blacklisting both access and refresh tokens
+  // blacklisting refresh tokens
   await blacklistToken(request.body.token);
 
-  await blacklistToken(request.token);
+  const user = await userModel.findByToken(request.body.token)
 
   // @ts-expect-error generateAuthToken is there
-  const tokens = request.user.generateAuthToken();
+  const tokens = user.generateAuthToken();
 
   reply.send(tokens);
 }
