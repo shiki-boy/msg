@@ -15,6 +15,10 @@ socket.on("new-message", (data) => {
 const formatChannelTitle = (title) => {
   return title.split("_").filter((name) => name !== authStore.user.fullName)[0];
 };
+
+const isMine = (message) => {
+  return authStore.user._id === message.author._id;
+};
 </script>
 
 <template>
@@ -25,7 +29,11 @@ const formatChannelTitle = (title) => {
 
     <div class="chat-messages">
       <template v-for="(message, index) in chatStore.messages" :key="index">
-        <ChatBubble :text="message.text" :is-mine="!!message.isMine" />
+        <ChatBubble
+          :text="message.text"
+          :is-mine="isMine(message)"
+          :createdAt="message.createdAt"
+        />
       </template>
     </div>
   </div>

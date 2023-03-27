@@ -8,9 +8,11 @@ const listMessagesResponseSchema = z.array(
     text: z.string(),
     _id: z.string(),
     author: z.object({
+      _id: z.string(),
       firstName: z.string(),
       lastName: z.string(),
     }),
+    createdAt: z.string(),
   })
 );
 

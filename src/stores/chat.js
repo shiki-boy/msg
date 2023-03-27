@@ -1,8 +1,10 @@
 import { defineStore } from "pinia";
 
+import httpClient from "../httpClient";
+
 export const useChatStore = defineStore("chat", {
   state: () => ({
-    messages: [{ text: "Hello", isMine: true }],
+    messages: [],
     channels: [],
     selectedChannel: null,
   }),
@@ -18,6 +20,16 @@ export const useChatStore = defineStore("chat", {
 
     selectChannel(channel) {
       this.selectedChannel = channel;
+
+      this.getMessages(channel._id);
+    },
+
+    async getMessages(channelId) {
+      const { data } = await httpClient.get(
+        `/api/chat/channel/${channelId}/messages`
+      );
+
+      this.messages = data;
     },
   },
 });
