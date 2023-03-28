@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { defineStore } from "pinia";
 import httpClient from "../httpClient";
 
@@ -27,6 +28,18 @@ export const useAuthStore = defineStore("auth", {
         this.resetAuth();
         return false;
       }
+    },
+
+    async logout() {
+      try {
+        await httpClient.post("/api/auth/logout");
+        Cookies.remove("Authorization");
+        Cookies.remove("refreshToken");
+        this.resetAuth();
+      } catch (error) {
+        console.log(error);
+      }
+      this.resetAuth();
     },
   },
 });

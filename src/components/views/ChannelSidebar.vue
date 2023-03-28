@@ -1,11 +1,15 @@
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
+import { useRouter } from 'vue-router';
 import httpClient from "../../httpClient";
 import { useAuthStore } from "../../stores/auth";
 import { useChatStore } from "../../stores/chat";
 
 const chatStore = useChatStore();
 const authStore = useAuthStore();
+const router = useRouter()
+
+const showUserMenu = ref(false);
 
 onMounted(async () => {
   const { data } = await httpClient.get("/api/auth/channels");
@@ -21,6 +25,18 @@ const formatChannelTitle = (title) => {
     .map((name) => name[0])
     .join(" ");
 };
+
+const handleShowUserMenu = () => {
+  showUserMenu.value = !showUserMenu.value;
+};
+
+const logout = async () => {
+  await authStore.logout();
+
+  chatStore.$reset()
+
+  router.push('/login')
+};
 </script>
 
 <template>
@@ -34,7 +50,17 @@ const formatChannelTitle = (title) => {
       >
         {{ formatChannelTitle(channel.title) }}
       </div>
+
+      <div class="add-channel">+</div>
     </nav>
+
+    <div class="user" @click="handleShowUserMenu">
+      {{ `${authStore.user.firstName[0]} ${authStore.user.lastName[0]}` }}
+
+      <ul class="user-menu" v-show="showUserMenu">
+        <li @click.stop="logout">Logout</li>
+      </ul>
+    </div>
   </aside>
 </template>
 
@@ -42,6 +68,9 @@ const formatChannelTitle = (title) => {
 .sidebar {
   width: 50px;
   background-color: #2e283f;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 nav {
@@ -52,7 +81,9 @@ nav {
   padding: 20px 0;
 }
 
-.channel {
+.channel,
+.user,
+.add-channel {
   background-color: crimson;
   color: whitesmoke;
   font-size: 14px;
@@ -67,8 +98,40 @@ nav {
   text-transform: uppercase;
 }
 
-.channel:hover {
+.channel:hover,
+.user:hover,
+.add-channel:hover {
   scale: 1.03;
   box-shadow: 1px 1px 8px rgba(172, 255, 47, 0.5);
+}
+
+.user {
+  background-color: blueviolet;
+  margin: 30px auto;
+  position: relative;
+}
+
+.user-menu {
+  position: absolute;
+  background-color: beige;
+  color: black;
+  left: 0px;
+  bottom: 50px;
+  z-index: 11;
+  list-style-type: none;
+  padding: 10px;
+  border-radius: 8px;
+  text-transform: capitalize;
+}
+
+.user-menu:hover {
+  background-color: beige;
+}
+
+.add-channel {
+  background-color: coral;
+  font-size: 20px;
+  /* color: black; */
+  font-weight: 500;
 }
 </style>
