@@ -1,7 +1,6 @@
 <script setup>
 import { inject, markRaw, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import httpClient from "../../httpClient";
 import { useAuthStore } from "../../stores/auth";
 import { useChatStore } from "../../stores/chat";
 import { useModalStore } from "../../stores/modal";
@@ -9,20 +8,18 @@ import AddChannelModal from "./AddChannelModal.vue";
 
 const chatStore = useChatStore();
 const authStore = useAuthStore();
-const { openModal, closeModal } = useModalStore();
+const { openModal } = useModalStore();
 const router = useRouter();
 
 const socket = inject("socket");
 const showUserMenu = ref(false);
 
 onMounted(async () => {
-  const { data } = await httpClient.get("/api/auth/channels");
-
-  chatStore.addChannels(data.channels);
+  const channels = await chatStore.addChannels();
 
   socket.emit(
     "join",
-    data.channels.map((ch) => ch._id)
+    channels.map((ch) => ch._id)
   );
 });
 
@@ -49,15 +46,6 @@ const logout = async () => {
 
 const handleAdd = () => {
   openModal({
-    buttons: [
-      {
-        label: "Ok",
-        callback: () => {
-          alert("123");
-        },
-      },
-      { label: "Cancel", callback: closeModal },
-    ],
     modalView: markRaw(AddChannelModal),
   });
 };

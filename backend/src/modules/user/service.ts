@@ -67,7 +67,6 @@ export async function blacklistToken(token: string) {
 }
 
 export async function addFriend(
-  email: string,
   user: UserResultDoc,
   friend: UserResultDoc
 ) {
@@ -75,7 +74,7 @@ export async function addFriend(
     throw new HttpException(400, "No such user found");
   }
 
-  if (user.friends.has(friend._id.toString())) {
+  if (user?.friends && user.friends.has(friend._id.toString())) {
     throw new HttpException(400, "Are already friends");
   }
 

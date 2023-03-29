@@ -1,10 +1,9 @@
 <script setup>
 import { storeToRefs } from "pinia";
 import { useModalStore } from "../stores/modal";
-import AppButton from "../components/AppButton.vue";
 
 const modalStore = useModalStore();
-const { isOpen, buttons, modalView } = storeToRefs(modalStore);
+const { isOpen, modalView } = storeToRefs(modalStore);
 </script>
 
 <template>
@@ -14,16 +13,6 @@ const { isOpen, buttons, modalView } = storeToRefs(modalStore);
         <div class="close-btn" @click="modalStore.closeModal()">close</div>
 
         <component :is="modalView"></component>
-
-        <div class="modal-buttons">
-          <template v-for="(button, index) in buttons" :key="index">
-            <AppButton
-              :label="button.label"
-              @click="button.callback()"
-            >
-            </AppButton>
-          </template>
-        </div>
       </div>
     </div>
   </Transition>
@@ -46,8 +35,8 @@ const { isOpen, buttons, modalView } = storeToRefs(modalStore);
 /* Modal Content */
 .modal-content {
   box-shadow: 0px 0px 20px rgba(5, 32, 73, 0.15);
-  background-color: burlywood;
-  color: black;
+  background-color: #2e283f;
+  color: whitesmoke;
   border-radius: 10px;
   margin: auto;
   padding: 20px;

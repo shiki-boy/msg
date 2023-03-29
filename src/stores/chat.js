@@ -14,8 +14,12 @@ export const useChatStore = defineStore("chat", {
       this.messages = [msg, ...this.messages];
     },
 
-    addChannels(channels = []) {
-      this.channels = [...this.channels, ...channels];
+    async addChannels(channels = []) {
+      const { data } = await httpClient.get("/api/auth/channels");
+
+      this.channels = [...this.channels, ...data?.channels ?? [],  ...channels];
+
+      return this.channels
     },
 
     selectChannel(channel) {

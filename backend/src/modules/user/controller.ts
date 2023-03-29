@@ -88,7 +88,7 @@ export async function addFriendHandler(
 ) {
   const friend = await userModel.findOne({ email: request.body.email });
 
-  await addFriend(request.body.email, request.user, friend);
+  await addFriend(request.user, friend);
 
   await createChannel({ isDirect: true, members: [request.user, friend] });
 
