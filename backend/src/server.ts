@@ -104,10 +104,20 @@ async function buildServer() {
 
   server.io.on("connection", (socket) => {
     console.log("new ws connection");
-    socket.on("send-message", (data) => {
-      socket.broadcast.emit("new-message", {
-        text: data.message,
-        isMine: false,
+
+    socket.on("join", (channelIds: string[]) => {
+      socket.join(channelIds);
+    });
+
+    socket.on("send-message", async ({ channelId, message, authorId }) => {
+      const author = await userModel.findById(authorId);
+
+      const createdAt = new Date().toISOString();
+
+      socket.to(channelId).emit("new-message", {
+        text: message,
+        author,
+        createdAt,
       });
     });
   });
