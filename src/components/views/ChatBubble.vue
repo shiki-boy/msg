@@ -27,7 +27,7 @@ const formatDateTime = (dateString) => {
   background-color: #364151;
   padding: 8px 15px;
   margin: 20px 0;
-  border-radius: 15px 15px 0 15px;
+  border-radius: 15px 15px 15px 0px;
 }
 
 .bubble::before {
@@ -45,6 +45,7 @@ const formatDateTime = (dateString) => {
 
 .bubble.mine {
   align-self: flex-end;
+  border-radius: 15px 15px 0 15px;
   background-color: #5e4dcd;
   color: white;
 }

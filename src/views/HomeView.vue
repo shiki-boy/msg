@@ -55,6 +55,7 @@ header {
   flex-direction: column-reverse;
   height: calc(100vh - 145px);
   overflow-y: auto;
+  padding-right: 10px;
 }
 
 .empty {
