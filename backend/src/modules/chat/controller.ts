@@ -17,11 +17,12 @@ export async function listMessagesHandler(
     if (!channel) {
       throw new HttpException(400, "No such channel");
     }
-
+console.log(12312)
     const response = await listMessages(channel);
 
     reply.send(response);
   } catch (error) {
-    throw new HttpException(400, "No such channel");
+    console.log(error)
+    throw new HttpException(500, "Something went wrong");
   }
 }

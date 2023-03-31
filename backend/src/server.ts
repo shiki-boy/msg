@@ -13,6 +13,8 @@ import userModel from "./modules/user/user.model";
 import { IUser, UserResultDoc } from "./modules/user/types";
 import chatRoutes from "./modules/chat/routes";
 import { chatSchemas } from "./modules/chat/schema";
+import chatMessageModel from "./modules/chat/message.model";
+import channelModel from "./modules/chat/channel.model";
 
 declare module "fastify" {
   export interface FastifyRequest {
@@ -111,8 +113,15 @@ async function buildServer() {
 
     socket.on("send-message", async ({ channelId, message, authorId }) => {
       const author = await userModel.findById(authorId);
-
+      const channel = await channelModel.findById(channelId);
       const createdAt = new Date().toISOString();
+
+      // save message in DB
+      await chatMessageModel.create({
+        text: message,
+        author,
+        channel,
+      })
 
       socket.to(channelId).emit("new-message", {
         text: message,

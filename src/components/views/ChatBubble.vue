@@ -40,7 +40,7 @@ const formatDateTime = (dateString) => {
 }
 
 .bubble.mine::before {
-  left: 0px;
+  left: -8px;
 }
 
 .bubble.mine {
