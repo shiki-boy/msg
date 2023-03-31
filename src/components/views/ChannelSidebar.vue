@@ -42,6 +42,8 @@ const logout = async () => {
   chatStore.$reset();
 
   router.push("/login");
+
+  socket.disconnect();
 };
 
 const handleAdd = () => {
