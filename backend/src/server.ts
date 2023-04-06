@@ -1,4 +1,4 @@
-import Fastify, { FastifyRequest, FastifyReply } from "fastify";
+import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import fastifyIO from "fastify-socket.io";
@@ -8,13 +8,11 @@ import loggingOptions from "./loggingOptions";
 import connectToDatabase from "./db";
 import { userSchemas } from "./modules/user/schema";
 import userRoutes from "./modules/user/routes";
-import blacklistTokenModel from "./modules/user/blacklistToken.model";
-import userModel from "./modules/user/user.model";
 import { IUser, UserResultDoc } from "./modules/user/types";
 import chatRoutes from "./modules/chat/routes";
 import { chatSchemas } from "./modules/chat/schema";
-import chatMessageModel from "./modules/chat/message.model";
-import channelModel from "./modules/chat/channel.model";
+import authenticate from "./authenticate";
+import initSockets from "./initSockets";
 
 declare module "fastify" {
   export interface FastifyRequest {
@@ -49,36 +47,7 @@ async function startServer() {
 
   server.register(helmet);
 
-  server.decorate(
-    "authenticate",
-    async (request: FastifyRequest, reply: FastifyReply) => {
-      const token = request.headers["authorization"]
-        ?.split("Bearer")
-        .pop()
-        .trim();
-
-      // check if token is blacklisted or not
-      blacklistTokenModel.exists({ token }).then((result) => {
-        if (result) {
-          reply.code(401).send({ message: "Your session has expired" });
-        }
-      });
-
-      try {
-        const user = await userModel.findByToken(token);
-
-        if (!user) {
-          return Promise.reject();
-        } else {
-          request.user = user;
-          request.userObj = user.toObject({ virtuals: true });
-          request.token = token;
-        }
-      } catch (error) {
-        reply.code(401).send({ message: "Invalid authentication credentials" });
-      }
-    }
-  );
+  server.decorate("authenticate", authenticate);
 
   // websockets
   server.register(fastifyIO, {
@@ -105,30 +74,5 @@ async function startServer() {
 
   await server.listen({ port, host: "0.0.0.0" });
 
-  server.io.on("connection", (socket) => {
-    console.log("new ws connection");
-
-    socket.on("join", (channelIds: string[]) => {
-      socket.join(channelIds);
-    });
-
-    socket.on("send-message", async ({ channelId, message, authorId }) => {
-      const author = await userModel.findById(authorId);
-      const channel = await channelModel.findById(channelId);
-      const createdAt = new Date().toISOString();
-
-      // save message in DB
-      await chatMessageModel.create({
-        text: message,
-        author,
-        channel,
-      });
-
-      socket.to(channelId).emit("new-message", {
-        text: message,
-        author,
-        createdAt,
-      });
-    });
-  });
+  initSockets(server);
 }
