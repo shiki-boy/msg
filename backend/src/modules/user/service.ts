@@ -1,6 +1,6 @@
 import { compare, hash } from "bcrypt";
 
-import { HttpException } from "@/utils/exceptions";
+import { HttpException } from "../../utils/exceptions";
 
 import userModel from "./user.model";
 import { CreateUserInput, LoginInput } from "./schema";

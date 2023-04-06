@@ -21,4 +21,7 @@ FROM base as production-build
 
 ENV NODE_ENV production
 
-CMD ["pnpm", "start"]
+RUN npm install -g pm2
+RUN pnpm tsc
+
+CMD ["pm2-runtime", "start", "./dist/server.js", "-i", "max"]

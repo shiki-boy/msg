@@ -30,11 +30,11 @@ declare module "fastify" {
 
 validateEnv();
 
-buildServer();
+startServer();
 
 connectToDatabase();
 
-async function buildServer() {
+async function startServer() {
   const server = Fastify({
     logger: loggingOptions[process.env.NODE_ENV],
   });
@@ -44,7 +44,8 @@ async function buildServer() {
     credentials: true,
   });
 
-  await server.register(import("@fastify/compress"));
+  // this can be done by nginx
+  // await server.register(import("@fastify/compress"));
 
   server.register(helmet);
 
@@ -121,7 +122,7 @@ async function buildServer() {
         text: message,
         author,
         channel,
-      })
+      });
 
       socket.to(channelId).emit("new-message", {
         text: message,
